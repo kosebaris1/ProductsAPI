@@ -17,20 +17,20 @@ namespace ProductsAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetProducts()
         {
-            var products =await _context.Products.ToListAsync(); 
+            var products = await _context.Products.ToListAsync();
             return Ok(products);
         }
 
         [HttpGet("api/[controller]/{id}")]  // [httpGet("{id}")
         public async Task<IActionResult> GetProduct(int? id)
         {
-            if(id == null)
+            if (id == null)
             {
                 return NotFound();
             }
-            var result =await _context.Products.FirstOrDefaultAsync(i => i.ProductId == id);   
+            var result = await _context.Products.FirstOrDefaultAsync(i => i.ProductId == id);
 
-            if(result == null)
+            if (result == null)
             {
                 return NotFound();
             }
@@ -43,7 +43,37 @@ namespace ProductsAPI.Controllers
             _context.Products.Add(entity);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction(nameof(GetProduct),new {id = entity.ProductId},entity);
+            return CreatedAtAction(nameof(GetProduct), new { id = entity.ProductId }, entity);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, Product entity)
+        {
+            if (id != entity.ProductId)
+            {
+                return BadRequest();
+            }
+            var result = await _context.Products.FirstOrDefaultAsync(i => i.ProductId == id);
+
+            if(result == null)
+            {
+                return NotFound();
+            }
+
+            result.ProductName = entity.ProductName;
+            result.Price = entity.Price;
+            result.IsActive = entity.IsActive;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
     }
 }
