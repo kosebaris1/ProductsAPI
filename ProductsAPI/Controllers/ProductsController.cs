@@ -75,5 +75,34 @@ namespace ProductsAPI.Controllers
 
             return NoContent();
         }
+
+        [HttpDelete]
+        public async Task<IActionResult> DeleteProduct(int? id)
+        {
+            if( id == null)
+            {
+                return NotFound();
+            }
+
+             var result = await _context.Products.FirstOrDefaultAsync(i => i.ProductId == id);
+
+            if (result == null)
+            {
+                return NotFound();
+            }
+
+            _context.Products.Remove(result);
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return NotFound();
+            }
+
+            return NoContent() ;
+        }
     }
 }
