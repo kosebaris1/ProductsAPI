@@ -26,7 +26,7 @@ namespace ProductsAPI
                 options.Password.RequireUppercase = false;
                 options.Password.RequireDigit = false;
 
-                options.User.RequireUniqueEmail = false;
+                options.User.RequireUniqueEmail = true;
                 options.Lockout.MaxFailedAccessAttempts = 5;
                 options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(5);
 
