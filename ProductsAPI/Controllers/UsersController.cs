@@ -8,10 +8,12 @@ namespace ProductsAPI.Controllers
     public class UsersController : Controller
     {
         private readonly UserManager<AppUser> _userManager;
+        private readonly SignInManager<AppUser> _signInManager;
 
-        public UsersController(UserManager<AppUser> userManager)
+        public UsersController(UserManager<AppUser> userManager, SignInManager<AppUser> signInManager)
         {
             _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         [HttpPost("Register")]
@@ -38,5 +40,22 @@ namespace ProductsAPI.Controllers
             return BadRequest(result.Errors);
         }
 
+        public async Task<IActionResult> Login(LoginDTO model)
+        {
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if(user == null)
+            {
+                return BadRequest(new {message = "Kullanıcı bulunamadı" });
+            }
+
+            var result= await _signInManager.CheckPasswordSignInAsync(user, model.Password,true);
+            if (result.Succeeded)
+            {
+                return Ok(new {token="token"});
+            }
+            return Unauthorized();
+        }
+
     }
+
 }
