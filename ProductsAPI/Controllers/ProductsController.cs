@@ -28,25 +28,26 @@ namespace ProductsAPI.Controllers
         }
 
         [Authorize]
-        [HttpGet("api/[controller]/{id}")]  // [httpGet("{id}")
+        [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var result = await _context
-                .Products
-                .Where(i => i.ProductId == id)
-                .Select(p =>ProductToDTO(p))
-                .FirstOrDefaultAsync(i => i.ProductId == id);
 
-            if (result == null)
+            var product = await _context.Products
+                .FirstOrDefaultAsync(p => p.ProductId == id);
+
+            if (product == null)
             {
                 return NotFound();
             }
-            return Ok(result);
+
+            var dto = ProductToDTO(product);
+            return Ok(dto);
         }
+
 
         [HttpPost]
         public async Task<IActionResult> CreateProduct(Product entity)
